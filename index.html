@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fake iOS 13</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
+      background: black;
+      color: white;
+      height: 100%;
+      overflow: hidden;
+    }
+    .lockscreen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      background: url('https://wallpapers.com/images/featured/ios-13-bgwv9mfv7d61l3gz.jpg') no-repeat center center/cover;
+      color: white;
+    }
+    .time {
+      font-size: 64px;
+    }
+    .date {
+      font-size: 24px;
+      margin-top: 5px;
+    }
+    .swipe {
+      position: absolute;
+      bottom: 40px;
+      text-align: center;
+      width: 100%;
+      font-size: 16px;
+      opacity: 0.7;
+    }
+    .homescreen {
+      display: none;
+      background-color: #000;
+      height: 100vh;
+      box-sizing: border-box;
+      padding-top: 30px;
+    }
+    .app-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-bottom: 100px;
+    }
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      background: white;
+      color: black;
+      border-radius: 15px;
+      text-align: center;
+      line-height: 60px;
+      margin: 10px;
+      font-size: 12px;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .dock {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      padding: 10px 20px;
+      display: flex;
+      gap: 15px;
+      backdrop-filter: blur(10px);
+    }
+    .dock .app-icon {
+      background: white;
+      color: black;
+      margin: 0;
+    }
+    .control-center {
+      position: absolute;
+      bottom: -200px;
+      left: 0;
+      width: 100%;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      transition: bottom 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .control-center.active {
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="lockscreen" id="lockscreen">
+    <div class="time" id="time"></div>
+    <div class="date" id="date"></div>
+    <div class="swipe">Swipe up to unlock</div>
+  </div>
+
+  <div class="homescreen" id="homescreen">
+    <div class="app-grid">
+      <div class="app-icon" onclick="openSafari()">Safari</div>
+      <div class="app-icon" onclick="openApp('Messages')">Messages</div>
+      <div class="app-icon" onclick="openApp('Settings')">Settings</div>
+      <div class="app-icon" onclick="openApp('Photos')">Photos</div>
+    </div>
+    <div class="dock">
+      <div class="app-icon" onclick="openSafari()">Safari</div>
+      <div class="app-icon" onclick="openApp('Music')">Music</div>
+    </div>
+    <div class="control-center" id="controlCenter">
+      <p>Control Center</p>
+      <p>Wi-Fi: On | Bluetooth: On | Brightness: 50%</p>
+    </div>
+  </div>
+
+  <script>
+    function updateTime() {
+      const now = new Date();
+      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const date = now.toLocaleDateString();
+      document.getElementById('time').textContent = time;
+      document.getElementById('date').textContent = date;
+    }
+
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    document.getElementById('lockscreen').addEventListener('click', () => {
+      document.getElementById('lockscreen').style.display = 'none';
+      document.getElementById('homescreen').style.display = 'block';
+    });
+
+    function openSafari() {
+      window.open("https://www.google.com", "_blank");
+    }
+
+    function openApp(appName) {
+      alert(appName + " app opened!");
+    }
+
+    document.body.addEventListener('touchstart', handleTouchStart, false);
+    document.body.addEventListener('touchmove', handleTouchMove, false);
+    let xDown = null;
+    let yDown = null;
+
+    function handleTouchStart(evt) {
+      const firstTouch = evt.touches[0];
+      xDown = firstTouch.clientX;
+      yDown = firstTouch.clientY;
+    }
+
+    function handleTouchMove(evt) {
+      if (!xDown || !yDown) return;
+
+      let xUp = evt.touches[0].clientX;
+      let yUp = evt.touches[0].clientY;
+
+      let yDiff = yDown - yUp;
+
+      if (yDiff > 50) {
+        document.getElementById('controlCenter').classList.add('active');
+      } else if (yDiff < -50) {
+        document.getElementById('controlCenter').classList.remove('active');
+      }
+
+      xDown = null;
+      yDown = null;
+    }
+  </script>
+</body>
+</html>
